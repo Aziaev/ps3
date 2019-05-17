@@ -1,23 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import { Table } from './Table';
 
 function App() {
+  const [opened, setOpened] = useState(false);
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        {opened ?
+          <Table
+            onClick={() => setOpened(!opened)}
+            opened={opened}
+          /> :
+          <button
+            className="App-button"
+            onClick={() => setOpened(!opened)}
+          >
+            Start
+          </button>
+          }
       </header>
     </div>
   );

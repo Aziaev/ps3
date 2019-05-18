@@ -10,6 +10,7 @@ export function Table(props) {
   const [dragged, setDrag] = useState(false);
   const [size, setSize] = useState(defaultSize);
   const [tabStyle, setTabStyle] = useState({});
+  const [position, setPosition] = useState(defaultPosition);
   const [boxMounted, setBoxMounted] = useState(false);
 
   useEffect(() => {
@@ -25,42 +26,64 @@ export function Table(props) {
     setTimeout(() => props.onClick(), 200);
   }
 
-
   return (
-    <div className="Table-container" style={tabStyle} onClick={closeTable}>
-      <div className="Table">
-        {boxMounted && (
-          <Draggable
-            defaultPosition={defaultPosition}
-            onStart={(e) => setDrag(!dragged)}
-            onStop={() => setDrag(!dragged)}
-            onDrag={(e, ui) => {
-              console.log(e, ui.y );
-              setSize(calcSize(ui.y));
-            }}
-          >
-            <div
-              className="box"
-              style={size}
-              onClick={e => e.stopPropagation()}
-            />
-          </Draggable>
-        )}
+    <>
+    {props.opened && (
+      <div className="Table-container" style={tabStyle} onClick={closeTable}>
+        <div className="Table">
+          {boxMounted && (
+            <Draggable
+              defaultPosition={position}
+              onStart={(e) => setDrag(!dragged)}
+              onStop={() => setDrag(!dragged)}
+              scale={1}
+              onDrag={({ clientX, clientY }, { x, y }) => {
+                setPosition({ x: clientX, y: clientY });
+                setSize(calcSize(clientX, clientY, x, y));
+              }}
+            >
+              <div
+                className="box"
+                style={size}
+                onClick={e => e.stopPropagation()}
+              />
+            </Draggable>
+          )}
+        </div>
       </div>
-    </div>
+    )}
+    </>
   );
 }
 
-const calcSize = y => {
+const calcSize = (clientX, clientY, x, y, position) => {
   if (y < 70 && y > 30) {
+    const width = (0.0175 * y - .225) * 400;
+    const height = (0.0175 * y - .225) * 90;
+    const margin = {
+      left: (400 * clientX - width * clientX + x * width) / 400 - x,
+      top: (90 * clientY - height * clientY + y * height) / 90 - y,
+    };
+
     return {
-      width: `${(0.0175 * y - .225) * 400}px`,
-      height: `${(0.0175 * y - .225) * 90}px`,
+      width: `${width}px`,
+      height: `${height}px`,
+      marginLeft: `${margin.left}px`,
+      marginTop: `${margin.top}px`,
     };
   } else if (y <= 30) {
+    const width = (0.0175 * 30 - .225) * 400;
+    const height = (0.0175 * 30 - .225) * 90;
+    const margin = {
+      left: (400 * clientX - width * clientX + x * width) / 400 - x,
+      top: (90 * clientY - height * clientY + y * height) / 90 - y,
+    };
+
     return {
-      width: `${(0.0175 * 30 - .225) * 400}px`,
-      height: `${(0.0175 * 30 - .225) * 90}px`,
+      width: `${width}px`,
+      height: `${height}px`,
+      marginLeft: `${margin.left}px`,
+      marginTop: `${margin.top}px`,
     };
   } else {
     return defaultSize;

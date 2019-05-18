@@ -7,7 +7,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+      <div className="App-body">
         {opened ?
           <Table
             onClick={() => setOpened(!opened)}
@@ -19,8 +19,8 @@ function App() {
           >
             Start
           </button>
-          }
-      </header>
+        }
+      </div>
     </div>
   );
 }
